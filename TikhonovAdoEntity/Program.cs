@@ -185,6 +185,75 @@ static void Entity()//использование Entity Framework
 
     db.SaveChanges();
 }
-AdoNet();
 
-Entity();
+static void TableOut()
+{
+    var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=OnlineStore;Trusted_Connection=True;");
+    connection.Open();
+
+    var sort1 = connection.CreateCommand(); //Вывести список товаров, отсортированных по названию своей группы, далее по цене.
+    sort1.CommandText = "select Id, Name, Price, In_Stock, Category from ProductOffer;";
+    var reader1 = sort1.ExecuteReader();
+    Console.WriteLine("Список товаров:");
+    while (reader1.Read())
+    {
+        Console.WriteLine("{0} {1} {2} {3} {4}", reader1.GetInt32(0), reader1.GetString(1), reader1.GetDouble(2), reader1.GetInt32(3), reader1.GetInt32(4));
+    }
+    reader1.Close();
+    connection.Close();
+}
+
+static void TableToDefault()
+{
+    var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=OnlineStore;Trusted_Connection=True;");
+    connection.Open();
+
+    var max1 = connection.CreateCommand(); //Найти товар с максимальной ценой и удалить его из базы.
+    max1.CommandText = "DELETE FROM ProductOffer;";
+    max1.ExecuteNonQuery();
+
+    var max2 = connection.CreateCommand(); //Найти товар с максимальной ценой и удалить его из базы.
+    max2.CommandText = "insert into ProductOffer(Price, Name, In_Stock, Category, Id) values (24999,'Honor X8',200,1,1), (49999,'Apple iPhone 11',190,1,2), (12499,'Samsung Galaxy M12',300,1,3), (59999,'Honor MagicBook X 15',275,2,4), (139999,'Apple MacBook Air 13',90,2,5), (49999,'HP 15s-eq2086ur',230,	2,6), (21999,'HUAWEI MatePad 10.4',190,3,7), (18499,'Lenovo M10 FHD',345,3,8), (20999,'Nokia T20 SS',315,3,9); ";
+    max2.ExecuteNonQuery();
+
+    connection.Close();
+}
+
+static void Main()
+{
+    int choosing = 1;
+    while (choosing != 0)
+    {
+        Console.WriteLine("Выберите действие: ");
+        Console.WriteLine("1. Выполнить команды AdoNet");
+        Console.WriteLine("2. Выполнить команды Entity Framework");
+        Console.WriteLine("3. Вывести таблицу ProductOffer");
+        Console.WriteLine("4. Вернуть таблицу ProductOffer к стандартным значениям");
+        Console.WriteLine("0. Выход");
+        choosing = Convert.ToInt32(Console.ReadLine());
+        switch (choosing)
+        {
+            case 1:
+                AdoNet();
+                break;
+            case 2:
+                Entity();
+                break;
+            case 3:
+                TableOut();
+                break;
+            case 4:
+                TableToDefault();
+                break;
+            case 0:
+                System.Environment.Exit(1);
+                break;
+            default:
+                break;
+
+
+        }
+    }
+}
+
+Main();
